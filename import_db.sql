@@ -55,15 +55,22 @@ VALUES
 
 CREATE TABLE replies (
   id INTEGER PRIMARY KEY,
-  subject_question TEXT NOT NULL,
+  question_id INTEGER NOT NULL,
   body TEXT NOT NULL,
-  parent_reply TEXT,
   users_id INTEGER NOT NULL,
-  parent_id INTEGER NOT NULL,
+  parent_id INTEGER,
 
   FOREIGN KEY(users_id) REFERENCES users(id),
-  FOREIGN KEY(parent_id) REFERENCES users(id)
+  FOREIGN KEY(parent_id) REFERENCES replies(id),
+  FOREIGN KEY(question_id) REFERENCES questions(id)
 );
+
+INSERT INTO
+  replies (users_id, parent_id, question_id, body)
+VALUES
+  ((SELECT id FROM users WHERE fname = 'Elon'), NULL, (SELECT id FROM questions WHERE title = 'WTF'), 'are you ok?'),
+  ((SELECT id FROM users WHERE fname = 'Elton'), NULL, (SELECT id FROM questions WHERE title = 'help??'), 'help is on the way');
+
 
 CREATE TABLE question_likes (
   id INTEGER PRIMARY KEY,
@@ -74,7 +81,11 @@ CREATE TABLE question_likes (
   FOREIGN KEY(question_id) REFERENCES questions(id)
 );
 
-
+INSERT INTO
+  question_likes (users_id, question_id)
+VALUES
+  ((SELECT id FROM users WHERE fname = 'Elon'), (SELECT id FROM questions WHERE title = 'WTF')),
+  ((SELECT id FROM users WHERE fname = 'Elton'), (SELECT id FROM questions WHERE title = 'help??'));
 
 
 
